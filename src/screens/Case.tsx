@@ -3,8 +3,9 @@ import { useAudio } from '../audio/AudioProvider'
 import { CASE_COUNT, isCorrect } from '../game/data'
 import { useGame } from '../game/GameContext'
 import { useI18n } from '../i18n'
-import { Box, Header, Paper, PaperInput, Plaque, Screen, Txt } from '../ui/layout'
+import { Box, Header, Paper, PaperInput, Plaque, Screen, Txt, useAssetsReady } from '../ui/layout'
 import { PuzzleViewer } from './puzzles'
+import { InvestigationTutorial } from './Tutorial'
 
 function ActionCard({ x, y, label, onClick }: { x: number; y: number; label: string; onClick: () => void }) {
   const { play } = useAudio()
@@ -28,7 +29,7 @@ function ActionCard({ x, y, label, onClick }: { x: number; y: number; label: str
 }
 
 export function InvestigationScreen({ n }: { n: number }) {
-  const { go, openHint } = useGame()
+  const { state, go, openHint, endTutorial } = useGame()
   const { play } = useAudio()
   const { ui } = useI18n()
   return (
@@ -61,6 +62,7 @@ export function InvestigationScreen({ n }: { n: number }) {
       </button>
       <Plaque label={ui.insertSolution} y={605.18} onClick={() => go({ name: 'solution', n })} />
       <Plaque label={ui.back} y={675.2} onClick={() => go({ name: 'story', n })} />
+      {!state.tutorialSeen && <InvestigationTutorial onDone={endTutorial} />}
     </Screen>
   )
 }
@@ -110,9 +112,45 @@ function OpenCase({ y, children }: { y: number; children: ReactNode }) {
   )
 }
 
+/** Taille de la réponse dans le champ papier agrandi, selon sa longueur. */
+const answerSize = (a: string) => (a.length <= 6 ? 36 : a.length <= 8 ? 31 : 26)
+
+/** Fenêtre de solution : la réponse en grand sur le papier du jeu, puis comment la trouver. */
+function RevealPopup({ n, onEnter, onBack }: { n: number; onEnter: () => void; onBack: () => void }) {
+  const { ui, content } = useI18n()
+  const c = content.cases[n - 1]
+  const ref = useRef<HTMLDivElement>(null)
+  const ready = useAssetsReady(ref)
+  return (
+    <div ref={ref} className={`modal${ready ? ' is-ready' : ''}`} role="dialog" aria-modal="true" aria-label={ui.solutionLabel}>
+      <OpenCase y={98.03}>
+        <Txt size={16} ls={1} color="#e59a4a" cx={213.07} y={204} w={260}>
+          {ui.solutionLabel}
+        </Txt>
+        {/* Le champ papier du jeu, un peu plus grand que celui de la saisie. */}
+        <Box cx={213.07} y={232} w={314} h={72}>
+          <img src="/img/ui/input-paper.webp" alt="" draggable={false} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, boxShadow: '0 4px 6px rgba(0,0,0,.45)' }} />
+          <Txt size={answerSize(c.answer)} ls={2.2} color="#211209" weight={700} cx={157} cy={36} w={296} nowrap style={{ textTransform: 'uppercase' }}>
+            {c.answer}
+          </Txt>
+        </Box>
+        <Txt size={13.5} ls={1} color="#e59a4a" cx={213.07} y={318} w={300}>
+          {ui.howLabel}
+        </Txt>
+        <Txt size={14.5} ls={0.02} lh={1.28} cx={209} y={404} w={200}>
+          {c.how}
+        </Txt>
+      </OpenCase>
+      <Plaque label={ui.enterSolution} y={605.18} onClick={onEnter} />
+      <Plaque label={ui.back} y={675.2} onClick={onBack} />
+    </div>
+  )
+}
+
 export function ConfirmScreen({ n }: { n: number }) {
   const { state, go, reveal } = useGame()
   const { ui } = useI18n()
+  const [shown, setShown] = useState(false)
   const already = state.revealed.includes(n)
   return (
     <Screen bg="/img/bg/board.webp">
@@ -125,15 +163,21 @@ export function ConfirmScreen({ n }: { n: number }) {
           {already ? ui.revealPaid : ui.revealCost}
         </Txt>
       </OpenCase>
-      <Plaque
-        label={ui.revealSolution}
-        y={605.18}
-        onClick={() => {
-          reveal(n)
-          go({ name: 'solution', n })
-        }}
-      />
-      <Plaque label={ui.back} y={675.2} onClick={() => go({ name: 'invest', n })} />
+      {/* Les boutons de l'écran sont retirés quand la fenêtre est ouverte, pour ne pas transparaître derrière. */}
+      {!shown && (
+        <>
+          <Plaque
+            label={ui.revealSolution}
+            y={605.18}
+            onClick={() => {
+              reveal(n)
+              setShown(true)
+            }}
+          />
+          <Plaque label={ui.back} y={675.2} onClick={() => go({ name: 'invest', n })} />
+        </>
+      )}
+      {shown && <RevealPopup n={n} onEnter={() => go({ name: 'solution', n })} onBack={() => go({ name: 'invest', n })} />}
     </Screen>
   )
 }

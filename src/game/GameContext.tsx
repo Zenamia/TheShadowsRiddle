@@ -21,6 +21,8 @@ export interface GameState {
   revealed: number[]
   /** Tous les dossiers sont ouverts (code d'équipe spécial). */
   unlockAll: boolean
+  /** Le tutoriel des boutons d'un dossier (indice, piste, révéler) a été vu. */
+  tutorialSeen: boolean
   /** Date de la dernière modification : la version la plus récente l'emporte entre appareil et serveur. */
   savedAt: number
 }
@@ -32,6 +34,7 @@ type Action =
   | { type: 'start' }
   | { type: 'hint'; n: number }
   | { type: 'reveal'; n: number }
+  | { type: 'tutorial' }
   | { type: 'solve'; n: number }
   | { type: 'newTeam'; team: string; unlockAll: boolean }
   | { type: 'unlock'; team: string }
@@ -50,6 +53,7 @@ const INITIAL: GameState = {
   hintsOpened: [],
   revealed: [],
   unlockAll: false,
+  tutorialSeen: false,
   savedAt: 0,
 }
 
@@ -69,6 +73,8 @@ function step(s: GameState, a: Action): GameState {
       return { ...s, hintsOpened: add(s.hintsOpened, a.n) }
     case 'reveal':
       return { ...s, revealed: add(s.revealed, a.n) }
+    case 'tutorial':
+      return s.tutorialSeen ? s : { ...s, tutorialSeen: true }
     case 'solve': {
       const solved = add(s.solved, a.n)
       const done = solved.length === CASE_COUNT
@@ -137,6 +143,8 @@ interface GameApi {
   start: () => void
   openHint: (n: number) => void
   reveal: (n: number) => void
+  /** Marque le tutoriel comme vu. */
+  endTutorial: () => void
   solve: (n: number) => void
   reset: () => void
   /** Démarre une nouvelle partie sous ce nom d'équipe (efface la partie locale d'une autre équipe). */
@@ -218,6 +226,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       start: () => dispatch({ type: 'start' }),
       openHint: (n) => dispatch({ type: 'hint', n }),
       reveal: (n) => dispatch({ type: 'reveal', n }),
+      endTutorial: () => dispatch({ type: 'tutorial' }),
       solve: (n) => dispatch({ type: 'solve', n }),
       reset: () => dispatch({ type: 'reset' }),
       newTeam: (team, unlockAll) => dispatch({ type: 'newTeam', team, unlockAll }),

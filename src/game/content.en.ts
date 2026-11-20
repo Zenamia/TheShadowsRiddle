@@ -1,4 +1,4 @@
-import type { Content } from './types'
+import type { CaseData, Content } from './types'
 
 /** Textes du jeu en anglais (version d'origine du Figma « AN WEB APP »). */
 const WELCOME = {
@@ -6,7 +6,7 @@ const WELCOME = {
   text: 'Wonder Town, a magical village where Halloween is all about friendship. This year, families were mixed into new teams to help neighbors connect. But when David discovers eight children in his group instead of five, a mysterious Halloween adventure begins.',
 }
 
-const CASES: Content['cases'] = [
+const CASES: Omit<CaseData, 'how'>[] = [
   {
     n: 1,
     title: 'The Agenda',
@@ -133,4 +133,22 @@ const INSTRUCTIONS =
 const END =
   'You cracked the codes, followed the trail, and uncovered the truth behind the shadows of Wonder Town.\nThe children are safe, thanks to you.\n\nBut remember... not every mystery ends where you think it does.\nSome riddles linger. Some shadows return.\n\nReady for your next case?'
 
-export const EN: Content = { welcome: WELCOME, cases: CASES, epilogue: EPILOGUE, instructions: INSTRUCTIONS, end: END }
+/** Comment trouver la solution (affiché après « révéler »). */
+const HOW: Record<number, string> = {
+  1: "In the e-mail, gather the letters of the same color and read them in the order given by Eric the First: a number appears.",
+  2: "Connect the elements of each series with a line. Each series draws a digit: read them in order.",
+  3: "The clock (01:05:03) tells you which groups of lines to keep. Count their intersections to get the code.",
+  4: "Mayor's age: Advisor 64 − Planner 25 = 39. Find the six-digit code linked to 39 and keep the three useful digits.",
+  5: "Each pair of lines crosses on one digit (1 to 9). Read the four crossings in order to get the code.",
+  6: "A sixth sense, a red suit, an insect, a tingling: the clues describe your neighborhood superhero, Spider-Man.",
+  7: "Each symbol stands for a letter of the alphabet. Decode them one by one to read the word.",
+  8: "On the phone screen, find the first contact, the one you barely see. Its details give the password.",
+  9: "Each item matches a letter. Put the letters together, then translate the word into French: DIX (10).",
+  10: "The post-it gives the end of the word: EST. The stopped clock gives its first letter: V. Together: VEST.",
+  11: "The visible categories give I, T, H, N. Add the first letters of the other books' categories (K, C, E): KITCHEN.",
+  12: "Link each group of symbols with lines on the calendar. Once all are connected, the hidden word appears: CAVE.",
+  13: "Form the signs with the sticks: they make Roman numerals. CCCXLIX is 349.",
+  14: "The first three costumes you found were Zombie, Spider-Man and Clown. Their initials give the code: ZSC.",
+}
+
+export const EN: Content = { welcome: WELCOME, cases: CASES.map((c) => ({ ...c, how: HOW[c.n] })), epilogue: EPILOGUE, instructions: INSTRUCTIONS, end: END }

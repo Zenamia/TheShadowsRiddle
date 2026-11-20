@@ -58,6 +58,13 @@ export interface Ui {
   finalScore: string
   theEnd: string
   backToFiles: string
+  // tutoriel du dossier et fenêtre de solution
+  tutorial: { title: string; text: string }[]
+  tutorialNext: string
+  tutorialDone: string
+  tutorialSkip: string
+  solutionLabel: string
+  howLabel: string
   // options
   options: string
   music: string
@@ -124,6 +131,17 @@ const en: Ui = {
   finalScore: 'FINAL SCORE',
   theEnd: 'The End',
   backToFiles: 'BACK TO FILES',
+  tutorial: [
+    { title: 'HINT', text: 'Stuck? A hint nudges you toward the answer without giving it away. It costs 2:00 on your clock, once per file.' },
+    { title: 'CLUE', text: 'The visual evidence of the puzzle. Zoom in, drag it around and study every detail. It is free.' },
+    { title: 'REVEAL', text: 'Out of ideas? Reveal the solution and how to find it. It costs 5:00, once per file.' },
+    { title: 'INSERT SOLUTION', text: 'Found the answer? Type it here. Wrong answers cost nothing, so keep trying.' },
+  ],
+  tutorialNext: 'NEXT',
+  tutorialDone: 'GOT IT',
+  tutorialSkip: 'SKIP',
+  solutionLabel: 'THE SOLUTION',
+  howLabel: 'HOW TO FIND IT',
   options: 'OPTIONS',
   music: 'Music',
   effects: 'Sound effects',
@@ -144,10 +162,10 @@ const fr: Ui = {
   next: 'SUIVANT',
   languageHeading: 'CHOISISSEZ VOTRE LANGUE',
   teamLabel: 'NOM DE VOTRE ÉQUIPE',
-  noticeNew: 'Gardez ce nom : il vous permet de reprendre votre partie à tout moment.',
-  noticeOffline: 'Sauvegarde en ligne indisponible : votre progression reste sur cet appareil.',
+  noticeNew: 'Gardez ce nom : il vous permet de reprendre votre partie à tout moment.',
+  noticeOffline: 'Sauvegarde en ligne indisponible : votre progression reste sur cet appareil.',
   signIn: 'CONNEXION',
-  signInPrompt: "Comment s'appellera votre\néquipe d'enquêteurs ?",
+  signInPrompt: "Comment s'appellera votre\néquipe d'enquêteurs ?",
   insertName: 'SAISISSEZ UN NOM',
   nameTaken: 'Ce nom est déjà pris. Choisissez-en un autre, ou revenez en arrière et appuyez sur CONTINUER.',
   continuePrompt: "Entrez le nom de votre équipe\npour reprendre l'enquête.",
@@ -156,7 +174,7 @@ const fr: Ui = {
   instructions: 'CONSIGNES',
   sealed: "DOSSIERS SCELLÉS\nÀ OUVRIR DANS L'ORDRE",
   rulesTitle: "L'HORLOGE VOUS ÉCOUTE",
-  rulesText: "Chaque demande d'aide coûte un temps précieux.\nChoisissez bien : les ombres comptent aussi.",
+  rulesText: "Chaque demande d'aide coûte un temps précieux.\nChoisissez bien : les ombres comptent aussi.",
   ruleHint: 'INDICE    −2:00',
   ruleReveal: 'RÉVÉLER   −5:00',
   startGame: 'LANCER LA PARTIE',
@@ -170,7 +188,7 @@ const fr: Ui = {
   reveal: 'RÉVÉLER',
   insertSolution: 'SAISIR LA SOLUTION',
   enterSolution: 'SAISIR LA SOLUTION',
-  revealQuestion: 'RÉVÉLER LA\nSOLUTION ?',
+  revealQuestion: 'RÉVÉLER LA\nSOLUTION ?',
   revealCost: 'Cette révélation coûte 5 minutes.',
   revealPaid: 'Vous avez déjà payé cette révélation.',
   revealSolution: 'RÉVÉLER LA SOLUTION',
@@ -186,6 +204,17 @@ const fr: Ui = {
   finalScore: 'SCORE FINAL',
   theEnd: 'Fin',
   backToFiles: 'RETOUR AUX DOSSIERS',
+  tutorial: [
+    { title: 'INDICE', text: "Bloqué ? Un indice vous met sur la voie sans donner la réponse. Il coûte 2:00 sur votre chrono, une fois par dossier." },
+    { title: 'PISTE', text: "Les éléments visuels de l'énigme. Zoomez, déplacez-la et scrutez chaque détail. C'est gratuit." },
+    { title: 'RÉVÉLER', text: "À court d'idées ? Découvrez la solution et comment la trouver. Coûte 5:00, une fois par dossier." },
+    { title: 'SAISIR LA SOLUTION', text: "Vous avez trouvé ? Saisissez-la ici. Une mauvaise réponse ne coûte rien : continuez d'essayer." },
+  ],
+  tutorialNext: 'SUIVANT',
+  tutorialDone: 'COMPRIS',
+  tutorialSkip: 'PASSER',
+  solutionLabel: 'LA SOLUTION',
+  howLabel: 'COMMENT LA TROUVER',
   options: 'OPTIONS',
   music: 'Musique',
   effects: 'Bruitages',

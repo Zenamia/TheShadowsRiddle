@@ -8,6 +8,8 @@ export interface CaseData {
   /** Autres écritures acceptées. */
   alt?: string[]
   solved: string
+  /** Comment trouver la solution, en bref (affiché après « révéler »). */
+  how: string
 }
 
 /** Tous les textes narratifs d'une langue. */

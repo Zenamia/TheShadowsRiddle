@@ -76,6 +76,7 @@ function cleanState(raw: any) {
     hintsOpened: ints(raw.hintsOpened),
     revealed: ints(raw.revealed),
     unlockAll: raw.unlockAll === true,
+    tutorialSeen: raw.tutorialSeen === true,
     savedAt: num(raw.savedAt) ?? 0,
   }
 }
