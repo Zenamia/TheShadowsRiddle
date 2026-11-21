@@ -35,8 +35,9 @@ export function InvestigationScreen({ n }: { n: number }) {
   return (
     <Screen bg="/img/bg/board.webp">
       <Header ribbon={ui.fileRibbon(n)} />
+      <ActionCard x={40.01} y={301.09} label={ui.clue} onClick={() => go({ name: 'puzzle', n })} />
       <ActionCard
-        x={40.01}
+        x={213.06}
         y={301.09}
         label={ui.hint}
         onClick={() => {
@@ -44,7 +45,6 @@ export function InvestigationScreen({ n }: { n: number }) {
           go({ name: 'hint', n })
         }}
       />
-      <ActionCard x={213.06} y={301.09} label={ui.clue} onClick={() => go({ name: 'puzzle', n })} />
       <button
         type="button"
         className="action"
@@ -116,7 +116,7 @@ function OpenCase({ y, children }: { y: number; children: ReactNode }) {
 const answerSize = (a: string) => (a.length <= 6 ? 36 : a.length <= 8 ? 31 : 26)
 
 /** Fenêtre de solution : la réponse en grand sur le papier du jeu, puis comment la trouver. */
-function RevealPopup({ n, onEnter, onBack }: { n: number; onEnter: () => void; onBack: () => void }) {
+function RevealPopup({ n, onDone }: { n: number; onDone: () => void }) {
   const { ui, content } = useI18n()
   const c = content.cases[n - 1]
   const ref = useRef<HTMLDivElement>(null)
@@ -141,15 +141,15 @@ function RevealPopup({ n, onEnter, onBack }: { n: number; onEnter: () => void; o
           {c.how}
         </Txt>
       </OpenCase>
-      <Plaque label={ui.enterSolution} y={605.18} onClick={onEnter} />
-      <Plaque label={ui.back} y={675.2} onClick={onBack} />
+      <Plaque label={ui.understood} y={640} center onClick={onDone} />
     </div>
   )
 }
 
 export function ConfirmScreen({ n }: { n: number }) {
-  const { state, go, reveal } = useGame()
+  const { state, go, reveal, solve } = useGame()
   const { ui } = useI18n()
+  const { play } = useAudio()
   const [shown, setShown] = useState(false)
   const already = state.revealed.includes(n)
   return (
@@ -169,15 +169,18 @@ export function ConfirmScreen({ n }: { n: number }) {
           <Plaque
             label={ui.revealSolution}
             y={605.18}
+            sound={null}
             onClick={() => {
+              play('reveal')
               reveal(n)
+              solve(n) // le dossier est considéré comme résolu : on enchaîne sans saisie
               setShown(true)
             }}
           />
           <Plaque label={ui.back} y={675.2} onClick={() => go({ name: 'invest', n })} />
         </>
       )}
-      {shown && <RevealPopup n={n} onEnter={() => go({ name: 'solution', n })} onBack={() => go({ name: 'invest', n })} />}
+      {shown && <RevealPopup n={n} onDone={() => go(n === CASE_COUNT ? { name: 'epilogue' } : { name: 'files' })} />}
     </Screen>
   )
 }

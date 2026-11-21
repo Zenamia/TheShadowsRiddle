@@ -16,6 +16,8 @@ export interface GameState {
   confirmed: boolean
   startedAt: number | null
   finishedAt: number | null
+  /** Temps de jeu réel en ms : ne compte que lorsque l'appli est ouverte et visible (onglet fermé ou en arrière-plan = pas de temps). */
+  playMs: number
   solved: number[]
   hintsOpened: number[]
   revealed: number[]
@@ -35,6 +37,7 @@ type Action =
   | { type: 'hint'; n: number }
   | { type: 'reveal'; n: number }
   | { type: 'tutorial' }
+  | { type: 'tick'; ms: number }
   | { type: 'solve'; n: number }
   | { type: 'newTeam'; team: string; unlockAll: boolean }
   | { type: 'unlock'; team: string }
@@ -49,6 +52,7 @@ const INITIAL: GameState = {
   confirmed: false,
   startedAt: null,
   finishedAt: null,
+  playMs: 0,
   solved: [],
   hintsOpened: [],
   revealed: [],
@@ -75,6 +79,8 @@ function step(s: GameState, a: Action): GameState {
       return { ...s, revealed: add(s.revealed, a.n) }
     case 'tutorial':
       return s.tutorialSeen ? s : { ...s, tutorialSeen: true }
+    case 'tick':
+      return { ...s, playMs: s.playMs + a.ms }
     case 'solve': {
       const solved = add(s.solved, a.n)
       const done = solved.length === CASE_COUNT
@@ -95,12 +101,15 @@ function step(s: GameState, a: Action): GameState {
 function reducer(s: GameState, a: Action): GameState {
   const next = step(s, a)
   // Une reprise venant du serveur garde sa propre date ; toute autre action date la modification.
-  return a.type === 'replace' ? next : { ...next, savedAt: Date.now() }
+  return a.type === 'replace' || a.type === 'tick' ? next : { ...next, savedAt: Date.now() }
 }
 
 /** Reprise d'une sauvegarde reçue : on repart du hub (ou des instructions si la partie n'a pas commencé). */
+/** Anciennes sauvegardes : le temps de jeu était l'écart entre le début et la fin (ou maintenant). */
+const legacyPlayMs = (s: Partial<GameState>) => (s.startedAt ? Math.max(0, (s.finishedAt ?? Date.now()) - s.startedAt) : 0)
+
 export function resume(s: GameState): GameState {
-  return { ...INITIAL, ...s, lang: isLang(s.lang) ? s.lang : 'en', confirmed: true, screen: { name: s.startedAt ? 'files' : 'instructions' } }
+  return { ...INITIAL, ...s, playMs: typeof s.playMs === 'number' ? s.playMs : legacyPlayMs(s), lang: isLang(s.lang) ? s.lang : 'en', confirmed: true, screen: { name: s.startedAt ? 'files' : 'instructions' } }
 }
 
 function load(): GameState {
@@ -108,6 +117,7 @@ function load(): GameState {
     const raw = localStorage.getItem(KEY)
     if (!raw) return INITIAL
     const s = { ...INITIAL, ...JSON.parse(raw) } as GameState
+    if (typeof JSON.parse(raw).playMs !== 'number') s.playMs = legacyPlayMs(s)
     // L'écran de chargement est transitoire : on reprend au hub si la partie est lancée.
     if (s.screen.name === 'loading') s.screen = { name: s.startedAt ? 'files' : 'rules' }
     return s
@@ -126,8 +136,7 @@ export interface Report {
 }
 
 export function reportFor(s: GameState): Report {
-  const end = s.finishedAt ?? Date.now()
-  const timeUsed = s.startedAt ? Math.max(0, Math.round((end - s.startedAt) / 1000)) : 0
+  const timeUsed = s.startedAt ? Math.max(0, Math.round(s.playMs / 1000)) : 0
   const hints = s.hintsOpened.length
   const reveals = s.revealed.length
   const penalty = hints * HINT_PENALTY + reveals * REVEAL_PENALTY
@@ -160,11 +169,44 @@ interface GameApi {
 const Ctx = createContext<GameApi | null>(null)
 
 const SYNC_DELAY_MS = 900
+/** Le temps de jeu est ajouté à l'état toutes les 5 s ; on ne compte jamais plus de 30 s d'un coup (veille de l'appareil). */
+const TICK_MS = 5000
+const MAX_TICK_MS = 30000
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, load)
   const latest = useRef(state)
   latest.current = state
+
+  // Décompte du temps de jeu : seulement quand l'appli est ouverte ET visible (et la partie lancée, non terminée).
+  const since = useRef<number | null>(null)
+  const pending = () => (since.current === null ? 0 : Math.min(Date.now() - since.current, MAX_TICK_MS))
+  /** État courant avec le temps de jeu à la milliseconde près (pour les sauvegardes). */
+  const snapshot = useCallback((): GameState => ({ ...latest.current, playMs: latest.current.playMs + pending() }), [])
+  const commit = useCallback(() => {
+    const ms = pending()
+    since.current = since.current === null ? null : Date.now()
+    if (ms > 0) dispatch({ type: 'tick', ms })
+  }, [])
+  const isRunning = () => document.visibilityState === 'visible' && !!latest.current.startedAt && !latest.current.finishedAt
+  useEffect(() => {
+    const reconcile = () => {
+      commit()
+      since.current = isRunning() ? Date.now() : null
+    }
+    reconcile()
+    const timer = window.setInterval(commit, TICK_MS)
+    document.addEventListener('visibilitychange', reconcile)
+    return () => {
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', reconcile)
+    }
+  }, [commit])
+  // La partie démarre / se termine : on (re)cale le décompte.
+  useEffect(() => {
+    commit()
+    since.current = isRunning() ? Date.now() : null
+  }, [state.startedAt, state.finishedAt, commit])
 
   // Copie locale : sert uniquement à reprendre la session en cours après un rechargement.
   useEffect(() => {
@@ -175,20 +217,26 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   }, [state])
 
-  // Sauvegarde en ligne sous le nom d'équipe, peu après chaque changement.
+  // Sauvegarde en ligne sous le nom d'équipe, peu après chaque changement (le simple décompte du temps n'en déclenche pas).
   useEffect(() => {
     if (!state.confirmed || !state.team) return
     const id = window.setTimeout(async () => {
-      const r = await saveCloud(latest.current)
-      if (r.status === 'conflict') dispatch({ type: 'replace', state: resume(r.state) }) // une version plus récente existe (autre appareil)
+      const r = await saveCloud(snapshot())
+      if (r.status === 'conflict') adopt(r.state) // une version plus récente existe (autre appareil)
     }, SYNC_DELAY_MS)
     return () => window.clearTimeout(id)
-  }, [state])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.savedAt, state.confirmed, state.team])
 
-  // Dernière écriture avant de quitter / de passer en arrière-plan.
+  // Dernière écriture avant de quitter / de passer en arrière-plan : temps de jeu compris.
   useEffect(() => {
     const flush = () => {
-      const s = latest.current
+      const s = snapshot()
+      try {
+        localStorage.setItem(KEY, JSON.stringify(s))
+      } catch {
+        /* stockage indisponible */
+      }
       if (s.confirmed && s.team) void saveCloud(s, true)
     }
     const onVisibility = () => document.visibilityState === 'hidden' && flush()
@@ -198,7 +246,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       document.removeEventListener('visibilitychange', onVisibility)
       window.removeEventListener('pagehide', flush)
     }
-  }, [])
+  }, [snapshot])
 
   // Au démarrage : si le serveur a une version plus récente de cette équipe (jouée ailleurs), on la reprend.
   useEffect(() => {
@@ -206,13 +254,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!s.confirmed || !s.team) return
     let cancelled = false
     loadCloud(s.team).then((r) => {
-      if (!cancelled && r.status === 'found' && r.state.savedAt > latest.current.savedAt) dispatch({ type: 'replace', state: resume(r.state) })
+      if (!cancelled && r.status === 'found' && r.state.savedAt > latest.current.savedAt) adopt(r.state)
     })
     return () => {
       cancelled = true
     }
   }, [])
 
+  const adopt = useCallback((s: GameState) => {
+    const r = resume(s)
+    // Le décompte repart du temps de la sauvegarde reçue.
+    since.current = document.visibilityState === 'visible' && r.startedAt && !r.finishedAt ? Date.now() : null
+    dispatch({ type: 'replace', state: r })
+  }, [])
   const go = useCallback((screen: Screen) => dispatch({ type: 'go', screen }), [])
   const api = useMemo<GameApi>(() => {
     let current = 1
@@ -228,10 +282,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
       reveal: (n) => dispatch({ type: 'reveal', n }),
       endTutorial: () => dispatch({ type: 'tutorial' }),
       solve: (n) => dispatch({ type: 'solve', n }),
-      reset: () => dispatch({ type: 'reset' }),
-      newTeam: (team, unlockAll) => dispatch({ type: 'newTeam', team, unlockAll }),
-      unlockTeam: (team) => dispatch({ type: 'unlock', team }),
-      restore: (s) => dispatch({ type: 'replace', state: resume(s) }),
+      reset: () => {
+        since.current = null
+        dispatch({ type: 'reset' })
+      },
+      newTeam: (team, unlockAll) => {
+        since.current = null // nouvelle partie : le temps repart de zéro
+        dispatch({ type: 'newTeam', team, unlockAll })
+      },
+      unlockTeam: (team) => {
+        since.current = null
+        dispatch({ type: 'unlock', team })
+      },
+      restore: (s) => adopt(s),
     }
   }, [state, go])
 

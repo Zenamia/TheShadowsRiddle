@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
-export type Sfx = 'button' | 'correct' | 'wrong' | 'fileOpen'
+export type Sfx = 'button' | 'correct' | 'wrong' | 'fileOpen' | 'reveal'
 /** Musique de fond : l'ambiance du jeu, ou le morceau de l'écran « The End ». */
 export type Scene = 'ambient' | 'end'
 
@@ -9,6 +9,7 @@ const SFX_URLS: Record<Sfx, string> = {
   correct: '/audio/correct.mp3',
   wrong: '/audio/wrong.mp3',
   fileOpen: '/audio/file-open.mp3',
+  reveal: '/audio/reveal.mp3',
 }
 const MUSIC: Record<Scene, { url: string; volume: number }> = {
   ambient: { url: '/audio/ambient.mp3', volume: 0.35 },

@@ -81,9 +81,9 @@ const CASES: Omit<CaseData, 'how'>[] = [
     title: 'Le Mot de passe\nchangé',
     story:
       "Soudain, depuis la fenêtre du bureau, David aperçut trois silhouettes qui pédalaient à toute vitesse vers la sortie de la ville. Sur leurs vélos, elles transportaient des enfants inconscients. Aucun doute : c'étaient les nains, les ravisseurs.\nSans réfléchir, David se lança à leur poursuite. À sa grande surprise, Eric, le conseiller qui l'aidait depuis le début, courait lui aussi dans la même direction pour rattraper les voleurs. Tout en courant, Eric essaya de lui donner de nouvelles informations sur l'affaire, mais David l'écoutait à peine : l'urgence primait sur tout, et Eric peinait à le suivre.\nÀ bout de souffle, David atteignit enfin l'endroit où les enfants auraient dû se trouver. Il était vide. Pas un bruit, pas une trace.\nIl sortit son téléphone pour appeler à l'aide... et réalisa, stupéfait, que les nains avaient changé son mot de passe pendant qu'il était distrait. Un nouveau piège. Une preuve de plus que l'ennemi avait toujours une longueur d'avance.",
-    hint: "« Le premier contact à l'écran est celui que l'on distingue à peine. Observez bien : parfois, l'invisible détient la clé. »",
+    hint: "« Chaque empreinte désigne des chiffres précis du clavier du téléphone. L'ordre est donné par la flèche. »",
     answer: '61753',
-    solved: 'Le contact discret cache le mot de passe. Déverrouillez le téléphone : chaque seconde compte.',
+    solved: "Les empreintes, lues dans l'ordre de la flèche, donnent le mot de passe. Déverrouillez le téléphone : chaque seconde compte désormais.",
   },
   {
     n: 9,
@@ -91,10 +91,9 @@ const CASES: Omit<CaseData, 'how'>[] = [
     story:
       "Grâce à son sens de l'observation, David réussit à déverrouiller son téléphone avec le nouveau code laissé par les ravisseurs. Il pouvait enfin appeler à l'aide et reprendre la recherche des enfants disparus.\nSans perdre une seconde, il contacta Eric pour obtenir du renfort. Les deux hommes unirent leurs efforts pour analyser les indices susceptibles de les mener aux enfants. David partagea tout ce qu'il avait découvert sur Adrian, y compris les photos de la mallette. En recoupant les informations, ils déterminèrent une nouvelle direction à suivre.\nGuidé par ces déductions, David se rendit dans une étrange ruelle appelée Angel Street. Il y trouva plusieurs objets abandonnés par les enfants, chacun semblant détenir un indice. Il comprit qu'ils avaient été laissés volontairement par l'un d'eux, comme un message indiquant le chemin.",
     // Version française du Figma : plus de traduction à faire, les objets forment directement le mot.
-    hint: '« Chaque objet correspond à une lettre. Assemblez-les pour former un mot. »',
-    answer: 'DIX',
-    alt: ['10'],
-    solved: "Les objets forment DIX. La piste se poursuit, et quelqu'un tente de vous guider de l'intérieur.",
+    hint: '« Chaque objet correspond à une lettre. Assemblez-les pour former un mot. La réponse est un nombre. »',
+    answer: '10',
+    solved: "Les objets donnent le nombre 10. La piste se poursuit, et quelqu'un tente de vous guider de l'intérieur.",
   },
   {
     n: 10,
@@ -150,7 +149,7 @@ const EPILOGUE =
 
 const INSTRUCTIONS =
   "Quatorze dossiers scellés se dressent entre vous et les enfants emportés par la brume. Ouvrez-les dans l'ordre. Chaque dossier contient un chapitre de l'enquête, une piste essentielle et un indice facultatif.\n" +
-  "Le chronomètre démarre à quatre-vingt-dix minutes. Un indice coûte deux minutes. Révéler une solution en coûte cinq. Les mauvaises réponses ne coûtent rien : fiez-vous à vos déductions. Votre score final est le nombre de secondes restantes à la clôture du dossier 14."
+  "Le chronomètre démarre à quatre-vingt-dix minutes. Un indice coûte deux minutes. Révéler une solution en coûte cinq. Les mauvaises réponses ne coûtent rien : fiez-vous à vos déductions. Le chrono ne tourne que lorsque le jeu est ouvert à l'écran. Votre score final est le nombre de secondes restantes à la clôture du dossier 14."
 
 const END =
   "Vous avez déchiffré les codes, suivi la piste et découvert la vérité derrière les ombres de Wonder Town.\nLes enfants sont sains et saufs, grâce à vous.\n\nMais souvenez-vous... tous les mystères ne s'achèvent pas là où l'on croit.\nCertaines énigmes persistent. Certaines ombres reviennent.\n\nPrêts pour votre prochaine affaire ?"
@@ -159,13 +158,13 @@ const END =
 const HOW: Record<number, string> = {
   1: "Dans l'e-mail, rassemblez les lettres de la même couleur et lisez-les dans l'ordre indiqué par Eric Premier : un nombre apparaît.",
   2: "Reliez par un trait les éléments de chaque série. Chaque série dessine un chiffre : lisez-les dans l'ordre.",
-  3: "L'horloge (01:05:03) indique les groupes de lignes à garder. Comptez leurs intersections pour obtenir le code.",
-  4: "Âge du maire : Conseiller 64 − Urbaniste 25 = 39. Trouvez le code à six chiffres lié à 39 et gardez les trois utiles.",
-  5: "Chaque paire de lignes se croise sur un chiffre (de 1 à 9). Lisez les quatre croisements dans l'ordre pour obtenir le code.",
+  3: "L'horloge (01:05:03) désigne les groupes de lignes. Le groupe au-dessus du nombre 01 a 3 intersections ; faites de même pour 05 et 03 : 324.",
+  4: "Âge du maire : 64 − 25 = 39. Écrivez le nombre révélé par l'encre invisible et gardez seulement les chiffres soulignés d'un tiret.",
+  5: "Chaque paire de lignes se croise sur un chiffre (de 1 à 9). L'ordre est donné par le symbole au centre.",
   6: "Un sixième sens, un costume rouge, un insecte, un picotement : les indices décrivent votre super-héros de quartier, Spider-Man.",
   7: "Chaque symbole correspond à une lettre de l'alphabet. Décodez-les un à un pour lire le mot.",
-  8: "Sur l'écran du téléphone, trouvez le premier contact, celui qu'on distingue à peine. Ses détails donnent le mot de passe.",
-  9: "Chaque objet correspond à une lettre. Assemblez les lettres pour former le mot : DIX (10).",
+  8: "Partez de l'empreinte la plus foncée : elle désigne le 6. La suivante, moins foncée, désigne le 1, et ainsi de suite : 61753.",
+  9: "Chaque objet correspond à une lettre. Assemblez-les pour former un mot : c'est un nombre. Écrivez-le en chiffres : 10.",
   10: "Le post-it donne la fin du mot : EST. L'horloge arrêtée donne sa première lettre : V. Ensemble : VEST.",
   11: "Les catégories visibles donnent U, I, I, E. Ajoutez la première lettre des autres livres (C, S, N) : CUISINE.",
   12: "Reliez chaque groupe de symboles par des lignes sur le calendrier. Une fois tout relié, le mot caché apparaît : CAVE.",

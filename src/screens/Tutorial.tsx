@@ -4,8 +4,8 @@ import { useI18n } from '../i18n'
 
 /** Éléments mis en lumière sur l'écran d'un dossier (coordonnées du design) et position de la bulle. */
 const STEPS: { rect: { x: number; y: number; w: number; h: number }; pop: { top?: number; bottom?: number } }[] = [
-  { rect: { x: 40, y: 301, w: 174, h: 102 }, pop: { top: 424 } }, // indice
-  { rect: { x: 213, y: 301, w: 174, h: 102 }, pop: { top: 424 } }, // piste
+  { rect: { x: 40, y: 301, w: 174, h: 102 }, pop: { top: 424 } }, // piste (à gauche)
+  { rect: { x: 213, y: 301, w: 174, h: 102 }, pop: { top: 424 } }, // indice (à droite)
   { rect: { x: 100, y: 422, w: 228, h: 114 }, pop: { top: 560 } }, // révéler
   { rect: { x: 100, y: 605, w: 228, h: 76 }, pop: { bottom: 932 - 592 } }, // saisir la solution
 ]

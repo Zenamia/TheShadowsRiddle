@@ -72,6 +72,7 @@ function cleanState(raw: any) {
     confirmed: true,
     startedAt: num(raw.startedAt),
     finishedAt: num(raw.finishedAt),
+    playMs: Math.min(Math.max(num(raw.playMs) ?? 0, 0), 7 * 24 * 3600 * 1000),
     solved: ints(raw.solved),
     hintsOpened: ints(raw.hintsOpened),
     revealed: ints(raw.revealed),

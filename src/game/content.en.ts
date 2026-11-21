@@ -68,18 +68,17 @@ const CASES: Omit<CaseData, 'how'>[] = [
     n: 8,
     title: 'The Changed Password',
     story: "Suddenly, from the office window, David spotted three figures pedaling at full speed toward the city exit. On their bikes, they were carrying unconscious children. No doubt about it: they were the dwarfs, the kidnappers.\nWithout thinking, David took off after them. To his surprise, Eric, the advisor who had been helping him from the beginning, was also running in the same direction to catch the thieves. While running, Eric tried to give him new information about the case, but David hardly listened: urgency took precedence over everything else, and Eric struggled to keep up.\nOut of breath, David finally reached the place where the children should have been. It was empty. Not a sound, not a trace.\nHe took out his phone to call for help... and realized, stunned, that the dwarfs had changed his password while he was distracted. A new trap. Another proof that the enemy was always one step ahead.",
-    hint: '"The first contact on the screen is the one you barely see. Look closely; sometimes the invisible holds the key."',
+    hint: "\"Each fingerprint points to precise digits on the phone's keypad. The order is given by the arrow.\"",
     answer: '61753',
-    solved: 'The faint contact carries the password. Unlock the phone; every second now matters.',
+    solved: 'The fingerprints, read in the order of the arrow, give the password. Unlock the phone; every second now matters.',
   },
   {
     n: 9,
     title: 'Angel Street',
     story: "Thanks to his careful observation, David managed to unlock his phone using the new code left by the kidnappers. Finally, he could call for help and resume the search for the missing children.\nWithout wasting a second, he contacted Eric for reinforcements. The two men combined their efforts to analyze the clues that might lead them to the children. David shared everything he had discovered about Adrian, including the photos from the briefcase. By cross-referencing the information, they determined a new direction to follow.\nGuided by these deductions, David headed to a strange alley called Angel Street. There he found several objects abandoned by the children, each seeming to hold a clue. He realized they had been intentionally left by one of the children, as a message pointing the way.",
-    hint: '"Each item corresponds to a letter. Put them together to form a word, then translate it to uncover the secret."',
-    answer: 'DIX',
-    alt: ['10'],
-    solved: 'The objects form DIX. The trail points onward, and someone is trying to guide you from inside.',
+    hint: '"Each item corresponds to a letter. Put them together to form a word. The answer is a number."',
+    answer: '10',
+    solved: 'The objects spell out 10. The trail points onward, and someone is trying to guide you from inside.',
   },
   {
     n: 10,
@@ -128,7 +127,7 @@ const EPILOGUE =
 
 const INSTRUCTIONS =
   'Fourteen sealed case files stand between you and the children taken into the fog. Open them in order. Each file contains a chapter of the investigation, one essential clue, and one optional hint.\n' +
-  'The clock begins at ninety minutes. A hint costs two minutes. Revealing a solution costs five. Wrong answers cost nothing, so trust your deductions. Your final score is every second left when File 14 closes.'
+  'The clock begins at ninety minutes. A hint costs two minutes. Revealing a solution costs five. Wrong answers cost nothing, so trust your deductions. The clock only runs while the game is open on your screen. Your final score is every second left when File 14 closes.'
 
 const END =
   'You cracked the codes, followed the trail, and uncovered the truth behind the shadows of Wonder Town.\nThe children are safe, thanks to you.\n\nBut remember... not every mystery ends where you think it does.\nSome riddles linger. Some shadows return.\n\nReady for your next case?'
@@ -137,13 +136,13 @@ const END =
 const HOW: Record<number, string> = {
   1: "In the e-mail, gather the letters of the same color and read them in the order given by Eric the First: a number appears.",
   2: "Connect the elements of each series with a line. Each series draws a digit: read them in order.",
-  3: "The clock (01:05:03) tells you which groups of lines to keep. Count their intersections to get the code.",
-  4: "Mayor's age: Advisor 64 − Planner 25 = 39. Find the six-digit code linked to 39 and keep the three useful digits.",
-  5: "Each pair of lines crosses on one digit (1 to 9). Read the four crossings in order to get the code.",
+  3: "The clock (01:05:03) picks the groups of lines. The group above the number 01 has 3 intersections; do the same for 05 and 03: 324.",
+  4: "Mayor's age: 64 − 25 = 39. Write the number revealed by the invisible ink and keep only the digits with a dash under them.",
+  5: "Each pair of lines crosses on one digit (1 to 9). The order is given by the symbol in the center.",
   6: "A sixth sense, a red suit, an insect, a tingling: the clues describe your neighborhood superhero, Spider-Man.",
   7: "Each symbol stands for a letter of the alphabet. Decode them one by one to read the word.",
-  8: "On the phone screen, find the first contact, the one you barely see. Its details give the password.",
-  9: "Each item matches a letter. Put the letters together, then translate the word into French: DIX (10).",
+  8: "Start from the darkest fingerprint: it points to number 6. The next, less dark, points to 1, and so on: 61753.",
+  9: "Each item matches a letter. Put the letters together to form a word: that word is a number. Write it in digits: 10.",
   10: "The post-it gives the end of the word: EST. The stopped clock gives its first letter: V. Together: VEST.",
   11: "The visible categories give I, T, H, N. Add the first letters of the other books' categories (K, C, E): KITCHEN.",
   12: "Link each group of symbols with lines on the calendar. Once all are connected, the hidden word appears: CAVE.",

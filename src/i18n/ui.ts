@@ -63,6 +63,7 @@ export interface Ui {
   tutorialNext: string
   tutorialDone: string
   tutorialSkip: string
+  understood: string
   solutionLabel: string
   howLabel: string
   // options
@@ -132,14 +133,15 @@ const en: Ui = {
   theEnd: 'The End',
   backToFiles: 'BACK TO FILES',
   tutorial: [
-    { title: 'HINT', text: 'Stuck? A hint nudges you toward the answer without giving it away. It costs 2:00 on your clock, once per file.' },
-    { title: 'CLUE', text: 'The visual evidence of the puzzle. Zoom in, drag it around and study every detail. It is free.' },
+    { title: 'CLUE', text: 'A Clue is the visual material of the puzzle: study it closely and zoom in. It is mandatory: you cannot solve the challenge without it.' },
+    { title: 'HINT', text: 'The help: open it when you are stuck. But it will cost you 2:00 on your clock, once per file.' },
     { title: 'REVEAL', text: 'Out of ideas? Reveal the solution and how to find it. It costs 5:00, once per file.' },
     { title: 'INSERT SOLUTION', text: 'Found the answer? Type it here. Wrong answers cost nothing, so keep trying.' },
   ],
   tutorialNext: 'NEXT',
   tutorialDone: 'GOT IT',
   tutorialSkip: 'SKIP',
+  understood: 'I UNDERSTAND',
   solutionLabel: 'THE SOLUTION',
   howLabel: 'HOW TO FIND IT',
   options: 'OPTIONS',
@@ -205,14 +207,15 @@ const fr: Ui = {
   theEnd: 'Fin',
   backToFiles: 'RETOUR AUX DOSSIERS',
   tutorial: [
-    { title: 'INDICE', text: "Bloqué ? Un indice vous met sur la voie sans donner la réponse. Il coûte 2:00 sur votre chrono, une fois par dossier." },
-    { title: 'PISTE', text: "Les éléments visuels de l'énigme. Zoomez, déplacez-la et scrutez chaque détail. C'est gratuit." },
+    { title: 'PISTE', text: "Une piste, ce sont les éléments visuels de l'énigme : observez-les de près et zoomez. Elle est indispensable : sans elle, impossible de résoudre le défi." },
+    { title: 'INDICE', text: "L'aide : ouvrez-la quand vous êtes bloqué. Mais elle vous coûtera 2:00 sur votre chrono, une fois par dossier." },
     { title: 'RÉVÉLER', text: "À court d'idées ? Découvrez la solution et comment la trouver. Coûte 5:00, une fois par dossier." },
     { title: 'SAISIR LA SOLUTION', text: "Vous avez trouvé ? Saisissez-la ici. Une mauvaise réponse ne coûte rien : continuez d'essayer." },
   ],
   tutorialNext: 'SUIVANT',
   tutorialDone: 'COMPRIS',
   tutorialSkip: 'PASSER',
+  understood: "J'AI COMPRIS",
   solutionLabel: 'LA SOLUTION',
   howLabel: 'COMMENT LA TROUVER',
   options: 'OPTIONS',
